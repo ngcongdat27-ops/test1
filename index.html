@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gửi Người Tớ Thương ❤️</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #ff4d6d;
+            --secondary-color: #ff85a1;
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 99%);
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+        }
+
+        /* Hiệu ứng trái tim bay background */
+        .heart-bg {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.5);
+            animation: move 10s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes move {
+            from { transform: translateY(100vh) rotate(0deg); opacity: 1; }
+            to { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 40px;
+            border-radius: 30px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            width: 350px;
+            z-index: 10;
+            transition: all 0.5s ease;
+        }
+
+        h1 {
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .gif-container img {
+            width: 100%;
+            max-width: 220px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            min-height: 100px;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #yesBtn {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 77, 109, 0.4);
+        }
+
+        #noBtn {
+            background: white;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        .success-msg {
+            display: none;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            animation: zoomIn 0.5s ease;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="heartsContainer"></div>
+
+    <div class="card" id="mainCard">
+        <div class="gif-container">
+            <img id="displayGif" src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHY2Z3Iyam5yZDRqbmR4eG54eXh4eXh4eXh4eXh4eXh4eXh4eCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/cLS1cfxvGOPVpf9g3y/giphy.gif" alt="cute">
+        </div>
+        
+        <h1 id="mainTitle">Cậu làm người yêu tớ nhé? ❤️</h1>
+
+        <div class="btn-container" id="btnGroup">
+            <button id="yesBtn">Đồng ý!</button>
+            <button id="noBtn">Khônggg</button>
+        </div>
+        <div id="successMsg" class="success-msg">Yayyy! Yêu cậu nhất! 🥰</div>
+    </div>
+
+    <script>
+        // Tạo trái tim bay background
+        function createHearts() {
+            const container = document.getElementById('heartsContainer');
+            for (let i = 0; i < 20; i++) {
+                let heart = document.createElement('div');
+                heart.className = 'heart-bg';
+                heart.innerHTML = '❤️';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                container.appendChild(heart);
+            }
+        }
+        createHearts();
+
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const title = document.getElementById('mainTitle');
+        const gif = document.getElementById('displayGif');
+        const btnGroup = document.getElementById('btnGroup');
+        const successMsg = document.getElementById('successMsg');
+
+        let noClickCount = 0;
+        const messages = [
+            "Ơ kìa...", "Nghĩ lại đi mà!", "Tớ buồn lắm đó 🥺", 
+            "Cho cơ hội nữa nè", "Bấm nút đỏ đi!", "Cậu quá đáng lắm!",
+            "Cậu không thoát được đâu!"
+        ];
+
+        noBtn.addEventListener('click', () => {
+            noClickCount++;
+            
+            // 1. Thay đổi chữ nút No
+            if (noClickCount < messages.length) {
+                noBtn.innerText = messages[noClickCount];
+            } else {
+                noBtn.innerText = "Hết nút rồi, bấm nút đỏ đi!";
+            }
+
+            // 2. Tăng size nút Yes (VIP: Tăng cực mạnh)
+            const currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
+            yesBtn.style.fontSize = (currentSize + 15) + 'px';
+            yesBtn.style.padding = (currentSize * 0.8) + 'px ' + (currentSize * 1.5) + 'px';
+
+            // 3. Rung lắc màn hình nhẹ
+            document.querySelector('.card').style.transform = `translateX(${Math.random() * 10 - 5}px)`;
+        });
+
+        yesBtn.addEventListener('click', () => {
+            // Hiệu ứng pháo hoa Tim (VIP)
+            var end = Date.now() + (5 * 1000);
+            var colors = ['#ff4d6d', '#ff85a1', '#ff0000'];
+
+            (function frame() {
+                confetti({
+                    particleCount: 3,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: colors
+                });
+                confetti({
+                    particleCount: 3,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: colors
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+
+            // Hiệu ứng hoàn tất
+            gif.src = "https://media.tenor.com/gUiu1zyxfzYAAAAi/bear-kiss-bear-kisses.gif";
+            title.style.display = 'none';
+            btnGroup.style.display = 'none';
+            successMsg.style.display = 'block';
+            document.querySelector('.card').style.background = "rgba(255, 255, 255, 0.4)";
+        });
+    </script>
+</body>
+</html>
